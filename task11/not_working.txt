@@ -1,0 +1,25 @@
+Your name: Zeus
+Email address: zeus@smetana.nestum.net
+Password: asdf
+
+Incoming:
+    Protocol: IMAP
+    Server hostname: romeo.fmi.fail
+    Port: 993
+    SSL: SSL/TLS
+    Authentication: Normal password
+
+Outgoing:
+    Protocol: SMTP
+    Server hostname: romeo.fmi.fail
+    Port: 465
+    SSL: SSL/TLS
+    Authentication: Normal password
+
+    Username:
+        Incoming: zeus@smetana.nestum.net
+        Outgoing: zeus@smetana.nestum.net
+
+
+
+-- this one works only for IMAP

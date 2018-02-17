@@ -1,0 +1,61 @@
+Total worktime: ~2hrs
+
+I first searched for some of the stuff you recommended.
+My initial instinct was to do some kind of setup involving git
+so it would be easy afterwards to revert to old configs that worked
+or change individual files from other configs - all the benefits of
+git etc.
+
+I read up on git-annex and it seems pretty cool, but seeing as how
+I will not be using massive files here I see no point in using it.
+
+I generated a key with no passphrase on romeo and sent the public key
+to dubhe. Afterwards I found out I could not ssh to dubhe from romeo
+and tried to help kpacu and lz1irq in debugging it. It is unknown whether
+I actually contributed something.
+
+Later reading up on etckeeper I found out that it is (almost) exactly
+the thing I wanted to do. The only thing it lacks for me is the ability
+to add config files from different places, but that would require a lot more
+work compared to what is done right now, as as it is right now it is just
+a simple wrapper around git with some extras. As it already did what I needed
+I decided (and my laziness forced me) against reinventing the wheel and
+doing it myself.
+
+After apt-get install-ing it I read up on it from it's manual page 
+mostly and browsing the various scripts under /etc/etckeeper. I saw that
+etckeeper.conf allowed you to autopush to a remote whenever you committed
+which was even better as that meant that I would just need to setup a daily
+commit. 
+
+But wait there's more - I even found a "daily" script in /etc/etckeeper
+which is exactly what I needed - daily commits. 
+I still debate whether this is a good practice or not as ideally you 
+would like all your commits to make sense, instead of just 
+committing daily, but seeing as how this is the task I decided to let it stay.
+
+I read up on how to setup a remote git repo and it was simple enough -
+I just had to use git init --bare so that it would have no working tree
+and be easier to work with as a remote. Afterwars all that was left
+to add the the repo on dubhe as a remote through ssh and sure enough it worked
+well enough in my tests.
+
+Finally I etckeeper init'd /etc, added dubhe as a remote and changed
+etckeeper.conf to autopush on commit. Committing this change itself
+worked out fine and even autopushed. Cool, all that's left is to setup
+crontab...
+
+..or not. Because the etckeeper package already installed a script in
+cron.daily which did exactly that - run the "daily" script which is located
+in /etc/etckeeper/. Looking at man 1 crontab and man 5 crontab and later at
+/etc/crontab I got some intuition on how it all chained together (together
+with what I remember from the lecture on cron). 
+
+I checked the sylog to confirm that this thing actually ran. 
+
+I also manually ran /etc/etckeeper/daily to make sure it DOES actually work.
+
+UPDATE:
+I forgot to mention that this does indeed consume some more space (currently
+5.5mb for the etc on romeo), but I find this to be nothing at all considering
+modern drives.

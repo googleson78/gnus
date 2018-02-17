@@ -1,0 +1,29 @@
+07.12.2017  - 14:00
+        theme music: https://danieldeluxe.bandcamp.com/album/instruments-of-retribution
+
+briefly read up on daemons from wikipedia
+read up on "daemon" (1) and "daemonize" (1)
+create a vbox with debian stable on it
+check whether I can use ghc and stack and cabal-install on debian stable - I think it requires backports
+search for "communicating with a daemon" and open a couple of tabs
+search for "unix socket tldp"
+open man socket - find man unix for local sockets
+nothing on TLDP for sockets in sections "guides" and "howtos" :(
+perhaps consider signals instead as my app is quite simple
+this page seems helpful for more basic info regarding daemons - http://www.netzmafia.de/skripten/unix/linux-daemon-howto.html
+another one - http://www.itp.uzh.ch/~dpotter/howto/daemonize
+oh look, a haskell lib - https://hackage.haskell.org/package/hdaemonize-0.5.4/docs/System-Posix-Daemonize.html
+found a book - "Advanced programming in the Unix environment"
+another haskell lib - https://hackage.haskell.org/package/daemons
+"man 7 unix", "man 3 daemon"
+pause       - 16:00
+resume      - 16:30
+will need to read up on monads and IO after all; brb
+pause/end   - 16:40
+
+10.12.2017  - 16:40
+        theme music: https://www.youtube.com/watch?v=88YdCmTS3lw
+
+open up man rsyslog.conf (5) and rsyslogd (8) to read them
+as well as the presentation on logging from GNUS
+pause       -  16:50 //ah the laziness

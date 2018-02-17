@@ -1,0 +1,11 @@
+git-annex looks cool, but I'm not using it for this since my files are not huge
+
+etckeeper is exactly what I wanted to do, but it's already done so I'm not reinventing the wheel
+it has a cool config - allows me to set a remote
+I read up on how to setup a remote git repo which is only used for pushing to (git init bare)
+tested it out a bit - works fine
+initialised repo in /etc and added the remote on dubhe, added origin to autopush afte commits
+it also hooks to apt so that's cool
+it also has a "daily" script which I will add as a cron job
+man crontab man 5 crontab man other.pdf
+it also adds a script to cron.daily so I don't have to do much there

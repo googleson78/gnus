@@ -1,0 +1,118 @@
+Total work time: ~40min + ~6hrs
+
+I started out by looking at what needed to be done to the virtualbox
+configuration. I opened the virtualbox networking documentation 
+(https://www.virtualbox.org/manual/ch06.html) and read up on whatever I needed
+to know. After trying to setup a link between my machine and the virtual
+machines for a bit and failing I gave up and instead decided to just work
+inside the virtual machines. A bit later I actually did manage to get set it
+up so I can ssh to the virtual machines from my computer without any issues,
+so I am unsure as to what I was doing wrong the first time. 
+
+The "internal network" stuff about connecting the machines worked out fine right from the
+get-go and later I set up /etc/network/interface files for both the machines
+so I would not have to do it manually every time. 
+
+Afterwards I set about reading up on how PXE is supposed to work. 
+Upon seeing a debian guide to getting it set up
+(https://www.debian.org/releases/stable/amd64/ch04s05.html.en)
+and
+(https://wiki.debian.org/PXEBootInstall#Another_Way_-_use_Dnsmasq)
+and that you just extract some files in a tftp, I set about to 
+configure my DHCP and TFTP servers (which were one and the same
+in my case - dnsmasq). I decided to use it as around a month ago I had already
+encountered a similar situation (had to flash and configure cisco IP phones
+which was done the same way pretty much, without the PXE stuff) and knew how
+to get it to work. I read through the entire default configuration that came
+with dnsmasq and all the examples inside and pretty much extrapolated from
+them what I needed for my config (together with the aforementioned debian
+guides). Afterwards I checked if my other machine was respectively sending and
+receiving dhcp requests and replies (which it was). Upon following the debian
+guide ("take this tar and extract it") it worked without any issues.
+
+The only thing left was to get internet to the slave machine which I was
+initially planning to do by making the master machine a router, but I realised
+that because I'm using a virtual machine I could just plug an additional card
+into it.
+
+
+Onto the diskless setup - read a lot and generally just got the impression
+that nfs was already figured out and done. This combined with it looking in
+general more complicated to set up + the fact that I liked the idea of
+exporting a block device more than exporting an FS + the fact that NBD was
+supposedly faster led me to go in the direction of trying to set up a diskless
+machine using a Network Block Device. At this point I needed to read up more
+on how PXE boot actually works. I learned that it sends a bootloader (in this
+case syslinux/pxelinux) and from there a kernel and initrd which finished the
+rest of the install. You could also send GRUB the same way, but pxelinux was more
+fleshed out so I decided to stick with it.
+
+I played a bit with nbd-server and set it up. In order to get it to work I
+actually reinstalled banshee with debian testing (buster) because I could not
+manage to get the neweset package on the old one even if I told it to use
+testing repos. This was required because there were some issues if I tried to
+use the newer version (on the slave machine which I reinstalled at that point)
+with the old one. After doing this and playing around with the configuration
+(which was very simple) I seemingly managed to export a file as a block
+device, attach to it with nbd-client and use it.
+
+Searched for a way to use the "nbd-modules" component of the debian installer
+in order to just use the DI in the hopes of finding out that the good people
+at debian have already figured out and sugar-coated the process of making such
+a setup, but alas - I found nothing pretty much. I even wonder why they
+bothered to include "nbd-modules" as a component if they are not going to
+include anything in userland to use it (????). I also managed to find no
+documentation on the topic (please help?).
+
+Afterwards I decided to try to do the following setup -
+1) Image of the machine I want to boot which I will mount through nbd
+2) kernel with nbd support or nbd modules
+3) initrd with nbd modules + a statically linked nbd-client on it
+
+The first two parts were pretty easy at first glance, so I needed to think
+about realizing the third one. I went through first looking for tools to do it
+for my and not finding much (Arch tool seemed to support it well? and gentoo's
+genkernel perhaps had SOME support for it? but no such luck with debian.). I
+did find something that I would later use - Dracut, but before that I
+accidentally encountered maniax' github page where his latest repo was a tool
+for reflashing sd cards for some thing or another which I no longer remember
+(https://github.com/krokodilerian/video-box-reflash). Thanks to it (and the
+instructions he had in the README.md) I realized I could probably just modify
+the initrd myself and the init script to do what I wanted. I was set on doing
+this but realized that it would be quite dirty and surely people had already
+figured this out. Setting this on my back-log as it seemed quite interesting,
+I turned back to looking at the tools and before long I set my sights on
+Dracut, which seemed like exactly what I needed as it created initrd's and it
+had support for nbd.
+
+After reading it's documentation and including the right modules it needed, I
+managed to create an initrd that I promptly tested to see if you could still
+boot with it (you could). After which I went onto the nbd-server. In order to
+get an image of the slave I attached a larger disk onto which I dd'd my entire
+slave. I also put my iniitrd and kernel on it. Afterwards I also attached it
+to my master machine so I could access them there without copying.
+
+At this point I read up on the pxelinux config and wrote a very minimalistic
+config, just saying to load the kernel and the initrd - it worked (after
+chmod +r initrd.gz). I even managed to get the slave machine to boot the disk
+it currently had by using the APPEND field in the pxelinux config to append 
+"root=/dev/sda1" to the kernel parameters.
+
+At this point I hit a wall that I thought I had already solved. I could indeed
+attach my exported with nbd-server block device, but it somehow did not read
+metadata correctly regarding the partitions. What I mean is the following -
+after attaching my NBD as /dev/nbd0 and trying to read it with parted for
+example, it said the classic corrupted metadata error. Looking up in the
+syslog I found out some kernel complaints about partitions being after EOD.
+Tinkering with this for ~1hr led me to nowhere. Tried losetup-ing it and
+exporting the loop device instead but it still did not work. 
+(I even tried deleting the extended partition from the image, but to no avail).
+I suspect this is either a bug in the program or in the kernel module, but I
+am entirely unsure as to why this happens. At this point I did not have any
+time left and as such this is going on my back-log. 
+
+If the nbd stuff had worked correctly and Dracut is to be trusted I would only
+have to append a bit more info about where the nbd is located (and that it
+would receive information from dhcp) as kernel parameters which the initrd was
+supposed to read, and that would supposedly be all that had to be finished in
+order for the diskless setup to come to fruition.

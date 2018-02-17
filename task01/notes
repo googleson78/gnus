@@ -1,0 +1,29 @@
+08.10 - TIME IS 16:30 - start of work
+# file baz -> find out it's xz
+# rename it to baz.xz so unxz likes it
+# file baz again to find out it's something that has MBR on it
+# MBR metadata looks broken - literally only zeroes at the beginning
+# no jump instruction
+# the 55a is there tho
+# just realised maybe I should actually just use parted instead of
+# acting like an interpreter for the MBR by looking at wiki
+# wow it actually works
+# has raid flag (?)
+# normal mount doesn't work, will try as loop device or whatever it's called
+# doesn't work, will try to add eb63 jump instruction
+# still doesn't work
+# there is no FS - probably the reason it won't mount
+# viewing file on the non-patched thing reads some metadata about -
+# it's id is a RAID (as parted also indicates)
+08.10 - TIME IS 16:52 - going to sleep for a bit
+08.10 - TIME IS 18:42 - reading about RAID
+# general googling; trying out fdisk -l for more info
+# found something about an app "testdisk"
+# trying it out but it seems complicated
+# will try manual approaches before learning to use it
+# trying to make a table that matches this description
+# and then fit it to the data from the original image
+# am stuck, maybe I need to know about RAID to be
+# able to solve this
+08.10 TIME IS 19:33 - don't know what to do, maybe read about RAID
+raid1 2 devices

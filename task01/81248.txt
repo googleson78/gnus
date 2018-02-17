@@ -1,0 +1,68 @@
+Total work time: ~3hrs
+
+tldr; - applied the parallelized "Velin homework solution algorithm" 
+together with Svetli (Stoimenoff) for about 2 hours managing to solve the problem
+without knowing much about what we are doing.
+
+
+Long version -
+I downloaded baz, using file to figure out what it is. Had to rename it to baz.xz
+so unxz would accept it. After another file I found out it has some MBR info on it
+and tried looking at it with xxd. There were a lot of zeroes at the beginning so I thought
+either that this is not supposed to be bootable (much more likely) or it is intentionally
+broken (the 55aa was there tho, so it still seemed valid). Checked out the MBR wiki page
+to find out more info but I didn't really get anything more than I already knew -
+I could see that there was some info for a partition written there. I checked out what
+fdisk/parted would say about it and after finding out size and some other misc. stuff
+I (instead of using my brain) tried to create a partition table that matches exactly those
+things (same start of partition) to see if it would be bootable or if it would "reveal"
+something more. After seeing that this failed I looked a bit more into the fact it has
+a type that was something along the lines of "linux raid autodetect". Not knowing what
+mount does at this point in my life I tried mounting it to no avail. Got off to sleep for a bit.
+
+A bit later I searched a bit for some metadata repairing and stuff like that (being still
+not informed of RAID and what it actually is) and found a program "testdisk" which I did not
+look into further, as it seemed unfruitful. At this point I gave up with the thought
+that I would rather just wait for the next GNUS so I can learn RAID and do it without
+struggling too much.
+
+Two days later at FMI we met up with Svetli and I shared what I had attempted. We had nothing
+to do while waiting for a lecture so we pretty much started trying to solve the problem in
+parallel and share what we learned so that we might assemble a solution in some way. Can't
+really remember EXACTLY how it went but we pretty much just typed in commands seeing their
+output and trying to extrapolate what we are missing/doing wrong and searching for it. Most
+of the useful guidance we found came from stack overflow/random forums/arch(gentoo) wiki/
+some wiki about mdadm. We struggled a bit with mounting as loop device after which we came
+to the conclusion that losetup "just werks" and went with that. After that we realized that
+we need only the partition so we just offset it by the start offset times the size of a
+sector which seemed to work fair enough. At this point we struggled a bit with assembling/
+creating with mdadm, as we were indeed pretty much brute forcing the homework without
+knowing too much, and we encountered the problem that it is apparently very hard to know
+what order the arguments need to be in (:D). Also two weird things happened -
+an md127 device was created which I am highly inclined to believe is some "temporary" or 
+"side product" device which is created as a result of mdadm failing to assemble/create
+because of some error with the command, which we had to stop in order to get our array
+to assemble. The second thing is that for some reason while assembling would work for Svetli
+after we figured it out, it would not work on my laptop(unexpected failure opening /dev/md0).
+I tried adding more and more options which further specified what needed to be done (for
+example metadata version and things of that sort), but it still didn't work. I would later
+find out that I actually need to compile some kernel modules which I didn't have
+at the time. After that we saw the encrypted volume, saw how you are supposed to open it,
+wrote to Velin hoping for info concerning the password, and after not receiving any we tried
+all the more stupid stuff we could think of (root, admin, etc). Svetli accidentally got
+the password by typing "asdf" instead of using ctrl+c to cancel the cryptsetup prompt.
+Afterwards it was pretty straightforward to find out we just needed to enable the 
+VG and we found the cake ("cake.jpg" file) after mounting the btfs filesystem present
+on the LV. I sent an email to Velin as to inform him that the cake is, in
+fact, not a lie at all and could very possibly be reached.
+
+I later went through the process again on a machine with support for RAID, so
+as to avoid having to fiddle with the kernel.
+
+
+Some time later (1 week) when another friend of mine (Nikola) was done with his homework
+we discussed the file and how there had to be something more hidden and he went through
+the hexdump, finding in it some suspicious strings like "there is no cake" (something
+like that) and another one "readme.txt.sw" which however we were unable to figure out
+the meaning of (atleast the second one), only finding out that .sw is some kind of
+PCM format. We were however unable to make it play or find anything more about it.

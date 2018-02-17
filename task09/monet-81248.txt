@@ -1,0 +1,88 @@
+Total worktime: 4-10hrs - who knows?
+    
+    Music: https://www.youtube.com/watch?v=ZDD0I5ph7fA 
+
+Main sources: RFC1034, RFC1035, B9 ARM
+    zytrax.com also had a somewhat good looking reference guide on the subject
+
+I started off by opening up the affromentioned sources. Unfortunately I was
+lazy so I ended up only reading up a bit from RFC1034 and the B9 ARM. I cannot
+recall anything mind-blowing or new for me, there were some small details that
+were fun to learn but in general I did not find a lot conceptually new stuff.
+I somehow ended up browsing through RFCs 1-50 at this point.
+
+I also looked through the default config folder for the bind9 debian package
+but it seemed really confusing - what was this named.conf? From here I learned
+that named was the name of the auth server that came with bind9. I looked
+through man named and man named.conf for a bit but that offered not much.
+
+I also played around with dig a bit to get a feel for how stuff works.
+
+Later in my life I wound up supposedly doing the homework with a
+colleague(-ette) - in reality she had almost done it already and had a stupid
+typo (a very frequent typo actually - 4 different people had done it -
+"netsum" instead of "nestum". I guess people really like networks and sums),
+and after fixing it there was almost no work left for her. From this
+experience I learned that in named.conf you specified zones and where their
+"database" files would reside. 
+
+With some pestering from 81247 I actually started to work on the task.
+(He had already done his setup at this point)
+
+I grew more and more annoyed that nowhere in the B9 ARM was this "database" 
+file well-documented. I read up on some options in the B9 ARM such as
+allow-transfer and masters and type, and afterwards pretty much extrapolated
+from the sample configs to create my own named.config. After some syntax
+debugging with named-checkconf I got it to work and even got the zone from my
+DNS buddy immediately confirming his setup and mine were working. I could even
+query myself for it - wohoo.
+
+At this point after some more reading from RFC1034 and the ARM I realized why
+I could not find much on the syntax for RRs and the "database" file - it is
+out of scope for bind9. I found a reference to RFC1035 in the ARM and went to
+read up there. Thank you for existing RFC1035. Using the information there and
+the specification for all the fields I managed to setup my own db file (after
+some more syntax debugging). 
+
+Me and 81247 initially both used "nsx.xxxx.nestum.net." but after a discussion
+we realized this was pointless and that it was better to have the real names,
+because if their IPs changed we would have to manually change them in our db
+files. 
+
+At some point I also read up on the notify mechanism and that it was the
+reason we could immediately update each others db files even though our
+refreshes/timeouts were not very low. Interestingly the notify option in bind9
+is set by default to send notifies to ALL servers that you are an authority
+for, even ones you are not a master of. I do not know for what purpose this is
+done, but as a result you can get some stupid stuff like slaves trying to
+notify each other? Also notifies are sent also by IPv6, which was obviously
+rejected as we did not have our IPv6 addresses in each others allow-transfer
+or masters options.
+
+Another weird thing I noticed is how the RR syntax fluctuates - you can have
+your TTL in pretty random places, named-checkzone even makes a note of that if
+you have your RRs in RFC1035 style with the TTL being 3rd.
+
+Being done with this task I went on my home "server" and setup bind9 there,
+creating a zone file. I decided to temporarily use romeo for a slave auth
+server while I still had access to it. All was fine and pretty until I
+encountered the following problem - from here on out my home machine will be
+"grunt" and my domain will be "adjoint.fun.".
+
+I have bought adjoint.fun. from namecheap.com. In my db file for the zone
+adjoint.fun. I have an NS record that points to "ns1.adjoint.fun.". 
+Furthermore I also have an A record that points ns1.adjoint.fun. to grunt.
+The thing is the server itself also sits on grunt, so at this point I realized
+that I have somewhat of a circular dependency - in order to resolve
+ns1.adjoint.fun. I would have to already have the bind9 server up and running.
+The only fix I could come up with was to have the IP for ns1.adjoint.fun.
+hardcoded in "fun.". But would that not mean that I am not *completely*
+authorative for the zone adjoint.fun., as the name servers above me also have
+an A record in that zone (apart from the NS records that would be necessary
+for delegation). I would love to discuss this and how things stand in real
+life, when we meet in 2018.
+
+Anyway I tried to set my two nameservers as "CustomDNS" as they call it, and
+ofcourse their website (that was also somehow slow as fuck by the way) just
+told me that "they encountered and error". Around 10 attempts later I gave up
+and decided to try at a later date.

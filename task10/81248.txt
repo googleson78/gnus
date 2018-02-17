@@ -1,0 +1,48 @@
+Total worktime: ~5hrs
+
+Music: https://www.youtube.com/watch?v=09UWBa9RX8s
+
+I started out with the mindset that we would have to hack on some ASM and
+debug with gdb, which in hindsight was the wrong mindset. Anyway I started out
+by looking at troubadour dissassembled with objdump.
+
+I ran valgrind on it which immediately gave me the address of the crash.
+I opened up gdb and searched for some instructions on using gdb and played
+around with that. Found out about "layout asm" which is a pretty cool thing
+actually. Did not really take any advantage of gdb, only used it to trace
+progress through the program to complete the bonus task.
+
+After quickly skimming through main I decided that I would have to read some
+assembly after all and looked up some guides. Found a decent looking one
+(which unfortunately had intel syntax which everyone around me seems to
+hate/dislike) - http://www.cs.virginia.edu/~evans/cs216/guides/x86.html .
+
+It was pretty decent and I was able to learn the very basic stuff. Afterwards
+I read a bit of the program and decided that it would be easier if I saw what
+some very basic stuff compiled to and went from there increasing the
+complexity. I played around a bit with how the compiler reorders stuff or
+changes operations (for example less than to greater than or equal, and also
+how it treats things it recognizes as constants).
+
+Some time later I spoke with Svetli about that I was thinking about reading
+the assembly and understanding it in order to complete the task and he
+laughingly responded that there was no need for that at all, which lead me to
+believe that I was (as usual) going to too low a level too soon.
+
+The next time I sat down to try it out I ran strace on troubadour learning
+nothing immediately, after which I tried ltrace. I saw that it was looking for
+something called "TMPDIR" from envvars and just gave it, after which it
+proceeded to work. 
+
+Onto the bonus task, I opened up gdb and traced where exactly troubadour was
+asking for a password and what happened when I gave the wrong one. After
+reading up more about cmp and conditional jumps, I went back to the place
+where troubadour was asking for a password and just reversed the jump
+condition (from je to jge for example). This didn't work so I tried it one
+more time (on the next conditional jump and cmp), which actually worked and I
+could get it to accept random passwords (that were not the actual real
+one(s)).
+
+I somewhat regret not getting to understand the program more, but I found a
+small passion for reading assembly code from this homework for which I am
+grateful. Maybe hack on a NES game in the future.

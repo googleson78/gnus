@@ -1,0 +1,17 @@
+Total work time: ~10 minutes
+
+I booted my PC, at the grub2 menu I pressed 'e' in order to edit the config I
+wanted to boot I added init=/bin/bash after the linux (kernel) entry, 
+it booted me into a bash, I opened the mount man page and looked up 
+the word remount, I found the remount option and I remounted my root fs 
+to the "/" directory but with rw permissions, I changed my password using passwd.
+
+I could not however boot the PC off afterwards getting the following string
+as an error message: 
+"WARNING: could not determine runlevel - doing soft poweroff
+  (it's better to use shutdown instead of poweroff from the command line)
+shutdown: /dev/initctl: No such file or directory
+init: /dev/initctl: No such file or directory"
+
+Afterwards I read up about it in the following SE answer:
+https://superuser.com/questions/886825/shutdown-run-initctl-no-such-file-or-directory

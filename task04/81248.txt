@@ -1,0 +1,50 @@
+Total worktime: 5-6hrs
+
+I began by either copying over my current .config file (which I made around a
+year ago) or (don't really rememberby just using the vanilla kernel config
+(which doesn't really matter since I went through all the options anyway).
+
+I mostly cut out stuff and added a few things that were weirdly missing.
+Amongst the more interesting stuff I cut out was -
+- process namespacing support, which I am still unsure as to what it's use case
+is, because it normally seems like something that would break my system
+- swap memory support
+- cgroups (which I will probably have to reenable)
+- initramfs support (my system didn't break! I think it's because I initially
+  used the initramfs because I needed to mount my /var and /tmp partitions
+  (which I have since merged into the / partition))
+- support for modules (didn't have any anyway so..)
+- a lot of debugging features for a lot of different stuff (gcc, block layer,
+  kernel debugging, some other stuff)
+- I disabled all the schedulers that were enabled except for the one that is
+  selected (not sure if this affects the system at all?)
+- removed MBR support, seeing as how I'm using GPT
+- disabled support for some features related to overheating and safety (which
+  I should probably reenable :D)
+- disabled a lot of net stuff that I am unsure if I actually need?
+
+Device drivers were awful as I had to go through a lot of stuff that mostly
+didn't concern my system at all. Stuff like:
+- parallel ports and the sort which I don't quite know about?
+- some serial ports which I left on because I am unsure if something inside my
+  laptop actually uses serial ports (?!?)
+- I disabled something called /dev/kmem, which I actually tried to cat prior
+  to disabling - it froze my system. Maybe we could talk about what this thing
+  is?
+- I disabled the watchdog support - personally found the way this watchdog
+  thing is implemented funny - let's just write to a file and then check it so
+  we know the system hasn't crashed :D
+- I somehow did NOT have ext2 support on (maybe this was vanilla after all?)
+  even though my /boot partition is on an ext2 FS
+- I also somehow did NOT have usb 3.0 support although I think my port worked
+  fine (and not slower than it should?)
+
+Misc. stuff:
+- found out you can disable support for various archiving methods such as xz
+  (which I disabled)
+
+My final image was a grand total of 4.2M (which is 2.5M less than my previous
+one, hooray for non-functioning stuff in the new image).
+
+Very time-consuming, as usual if you want to actually check out all the
+settings. Pretty sure if I was more educated I could cut off much more stuff.

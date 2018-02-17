@@ -1,0 +1,37 @@
+Work time: ~40m
+
+After Velin mentioned that ntp would be very hard to understand I decided to
+look into it and opened up the rfc (5905) for the newest version of it (ntpv4).
+I read the abstract and the intro sections and then started to skim through it
+to get a general idea of what I should learn about. At some point I saw the
+following phrase:
+
+    "..The selection algorithm operates to find an intersection interval containing a
+    majority clique of truechimers using Byzantine agreement principles
+    originally proposed by Marzullo.."
+
+..at which point I decided that I did not really want to learn about all this
+stuff right now. 
+
+This ASCII art also helped demotivate me and at the same time I find it
+amusing so I decided to share it:
+
+             +-----                       -----+^1/2
+             |        n-1                      |
+             |        ---                      |
+             |   1    \                     2  |
+     psi_s = | ---- * /  (theta_s - theta_j)   |
+             |  n-1   ---                      |
+             |        j=1                      |
+             +-----                       -----+
+
+Onto the task itself:
+Opened up romeo; apt-cache searched for ntp and after filtering a bit
+installed the "ntp" package. Checked /etc/ for any config files beginning
+with ntp and found ntp.conf. It seemed configured with working servers -
+I could ping them. I checked the status of the service and it was apparently
+running and fine.
+
+I ran a "dpkg -L ntp | less" to see what else it had installed. I found some 
+other stuff like ntpq which I did not know how to use, ntpsweep which I did 
+not know how to use and ntptime which was simple enough to use.

@@ -1,0 +1,33 @@
+db username: student
+db pass:     asdf
+
+
+MariaDB [mail]> SELECT * FROM virtual_domains;
++----+--------------------+
+| id | name               |
++----+--------------------+
+|  1 | smetana.nestum.net |
++----+--------------------+
+1 row in set (0.00 sec)
+
+
+MariaDB [mail]> SELECT * FROM virtual_users;
++----+-----------+------------------------------------------------------------------------------------------------------------+-----------------------------+
+| id | domain_id | password                                                                                                   | email                       |
++----+-----------+------------------------------------------------------------------------------------------------------------+-----------------------------+
+|  1 |         1 | $6$10f742aff2601062$PilzfTkFTDa75gQqpFbQkG5EcZpRa8K1gfWGzuWZJuWGDw.gaGQj9UwomWqdImwK.uT.mqqdp7XAzqVxRvLE4/ | zeus@smetana.nestum.net     |
+|  2 |         1 | $6$b12340c4f2f51f30$LQWyUHHTzpdnSpJiSbp.aPtlnJCwvQzLN/OIIh9IZrqDO2jwSVdh9/04jb6NpABHtzW8HNiXPaR3PkvgN.ld3/ | sisyphus@smetana.nestum.net |
++----+-----------+------------------------------------------------------------------------------------------------------------+-----------------------------+
+2 rows in set (0.00 sec)
+
+zeus pass:     asdf
+sisyphus pass: rock
+
+MariaDB [mail]> SELECT * FROM virtual_aliases;
++----+-----------+-------------------------------+-------------------------+
+| id | domain_id | source                        | destination             |
++----+-----------+-------------------------------+-------------------------+
+|  1 |         1 | postmaster@smetana.nestum.net | zeus@smetana.nestum.net |
+|  2 |         1 | abuse@smetana.nestum.net      | zeus@smetana.nestum.net |
++----+-----------+-------------------------------+-------------------------+
+2 rows in set (0.00 sec)

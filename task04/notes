@@ -1,0 +1,249 @@
+#_!#$ possible breakage:
+----general setup----
+removed swap
+removed auditing support
+removed BSD process accounting
+removed netlink exporting
+removed cgroups
+removed all namespace support
+removed initramfs
+removed slab merging
+removed profiling support
+removed kprobes
+removed branch optimization
+removed gcc entropy
+removed virtually mapped stack (reenable)
+----modules----
+removed modules
+----block layer----
+removed block layer debugging
+removed some partitions
+removed MBR support
+removed all schedulers except selected one
+----processor----
+removed mps table
+removed wchan values
+removed IBM Calgary IOMMU
+removed overheating support (reenable)
+removed reroute for broken IRQs
+remvoed intel performance monitoring (reenable)
+removed cpu microcode loading support
+removed numa memory allocation
+removed bounce buffers (reenable)
+removed check for low memory corruption
+removed efi runtime system support
+removed kexec system call 
+removed kernel crash dumps
+removed relocatable kernel
+----power management----
+removed suspend to ram (reenable)
+removed device power management core func (reenable)
+----bus options----
+removed pci hotplug
+----network----
+!enable tls afterwards!
+?enable PF_KEY sockets afterwards?
+removed policy routing
+removed ip multicast routing
+removed tcp syn cookies (syn flood) (reenable?)
+removed tcp md5 signatures (reenable?)
+removed ipv6 (reenable)
+removed netlabel support (reenable?)
+removed security marking (reenable?)
+removed bluetooth support (reenable?)
+----device drivers----
+---generic drivers---
+removed uevent helper
+removed managed device resources debug
+---sata---
+removed SATA port multiplier
+removed AMD pata support (?)
+removed intel pata piix support
+---raid/lvm---
+removed support (REENABLE)
+---network--
+removed logging
+--ethernet--
+removed alacritech
+removed aquantia
+removed "Qualcomm devices"
+removed solarflare
+--FDDI--
+removed fddi support
+--wlan--
+removed atheros bluetooth
+removed broadcom devices
+removed intel devices
+removed realtek devices
+removed quantenna devices
+---input devices---
+removed polled input device skeleton (unsure, out-of-tree)
+removed sparse keymap (unsure, out-of-tree)
+maybe enable joystick support next time
+removed joysticks gamepads (reenable)
+removed tablets
+removed touchscreens
+removed misc. devices
+---char devices---
+removed non-standard serial port
+removed /dev/kmem
+--serial drivers--
+removed 8250_core support
+removed 8250 console
+removed extended 8250 support
+removed support for (both) intel soc serial
+---watchdog---
+removed watchdog support
+---graphics support---
+disabled gpu state capturing
+---usb support---
+enabled 3.0 support
+---sd/mmc support---
+removed mmc support
+---edac---
+removed edac
+---iommu---
+removed amd iommu
+----file systems----
+enabled ext2 support (?!?)
+removed cdrom transparent decompression
+removed misc. filesystems
+removed network filesystems
+----kernel hacking----
+removed magic sysrq key
+removed kernel debugging
+removed tracers
+removed firewire debugging
+removed verbose x84 bootup
+
+
+----virtualization----
+removed virtualization
+----crypto----
+removed authenc support
+removed disabled run-time self-tests
+removed deflate compression algorithm
+removed hardware crypto
+----library routines----
+removed xz support (REENABLE)
+----security options----
+removed integrity subsystem (REENABLE)
+removed ENCRYPTED KEYS (reenable?)
+removed different security models (reenable?)
+
+#_!#$ unnecesary:
+----general setup----
+removed swap
+removed netlink exporting
+removed cgroups
+removed initramfs
+removed slab merging
+removed profiling support
+removed kprobes
+removed branch optimization
+removed gcc entropy
+removed virtually mapped stack (reenable)
+----modules----
+removed modules
+----block layer----
+removed block layer debugging
+removed some partitions
+removed MBR support
+removed all schedulers except selected one
+----processor----
+removed mps table
+removed for extended (non-pc) x86 platforms
+removed wchan values
+removed IBM Calgary IOMMU
+removed overheating support (reenable)
+removed reroute for broken IRQs
+remvoed intel performance monitoring (reenable)
+removed cpu microcode loading support
+removed numa memory allocation
+removed bounce buffers (reenable)
+removed check for low memory corruption
+removed efi runtime system support
+removed kexec system call 
+removed kernel crash dumps
+----power management----
+removed suspend to ram (reenable)
+removed device power management core func (reenable)
+----bus options----
+removed pci hotplug
+----network----
+!enable tls afterwards!
+?enable PF_KEY sockets afterwards?
+removed policy routing
+removed tcp syn cookies (syn flood) (reenable?)
+removed tcp md5 signatures (reenable?)
+removed ipv6 (reenable)
+removed netlabel support (reenable?)
+removed security marking (reenable?)
+removed bluetooth support (reenable?)
+----device drivers----
+---generic drivers---
+removed uevent helper
+removed managed device resources debug
+---sata---
+removed SATA port multiplier
+removed AMD pata support (?)
+removed intel pata piix support
+---raid/lvm---
+removed support (REENABLE)
+---network--
+removed logging
+--ethernet--
+removed alacritech
+removed aquantia
+removed "Qualcomm devices"
+removed solarflare
+--FDDI--
+removed fddi support
+--wlan--
+removed atheros bluetooth
+removed broadcom devices
+removed intel devices
+removed realtek devices
+removed quantenna devices
+---input devices---
+removed polled input device skeleton (unsure, out-of-tree)
+removed sparse keymap (unsure, out-of-tree)
+maybe enable joystick support next time
+removed joysticks gamepads (reenable)
+removed tablets
+removed touchscreens
+removed misc. devices
+---char devices---
+removed non-standard serial port
+removed /dev/kmem
+--serial drivers--
+removed 8250_core support
+removed 8250 console
+removed extended 8250 support
+removed support for (both) intel soc serial
+---watchdog---
+removed watchdog support
+---graphics support---
+disabled gpu state capturing
+---usb support---
+enabled 3.0 support
+---sd/mmc support---
+removed mmc support
+---edac---
+removed edac
+---iommu---
+removed amd iommu
+
+----virtualization----
+removed virtualization
+----crypto----
+removed authenc support
+removed disabled run-time self-tests
+removed deflate compression algorithm
+removed hardware crypto
+----library routines----
+removed xz support (REENABLE)
+----security options----
+removed integrity subsystem (REENABLE)
+removed ENCRYPTED KEYS (reenable?)
+removed different security models (reenable?)

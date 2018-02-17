@@ -1,0 +1,160 @@
+Total worktime: <24hrs
+
+I installed nginx through apt. Opened up default config files and looked
+around them for a bit. Got the general idea - you have available sites and
+enabled sites. Learned about the syntax from looking at the base http module
+official nginx documentation and the default website. Played around with it a
+bit to make it also autoindex folders and show a different index, worked out
+with almost no trouble. 
+
+Afterwards I opened up the README.md for acme-tiny and
+just followed the instructions there to get my certificate and enable https. I
+disabled tls1.0 and tls1.1 at this point because they are no good anymore.
+Everything worked out fine, I got an A on sslabs and after enabling HSTS
+(with a single line on the https config) and setting http to always redirect
+to https I managed to get an A+ on sslabs.
+
+I couldn't decide on whether to use exim or postfix for a while and I had
+decided on exim, because most of the comments I saw were
+"exim is more flexible, but postfix is easier to conf.". This fit with my
+goals because I wanted to use the more flexible one in the future. I searched
+for guides and documentation and found a book by o'rly 
+("The Exim Mail Transfer Agent"), which had a good general description of how
+mail works in general, which was quite useful, because I had skipped the GNUS
+lecture which explained just that. I read through that.
+
+I was later informed we *had* to use postfix, so I redownloaded postfix in the
+end. Looking around the basic config guide on the website and the default
+config that came with the apt package I found that there was almost no work
+for me to do. However I could not use "mail" to send mail for some reason, or
+rather postfix was not forming my mail correctly (it was adding "romeo"
+instead of "romeo.fmi.fail"). After two hours of inspection I found that the
+variable "myhostname" does NOT actually hold your hostname by convention, but
+instead it holds your FQDN. Wow. After "fixing" this I was able to send mail
+normally. I also checked /etc/aliases. Turns out I can just add
+"root: godzbanebane@gmail.com" and regenerate the db (postalias), so it
+redirects mail to somewhere else.
+
+I searched for guides to setting up dovecot + postfix and found plenty. I
+chose to use this one because it looked rather good and well structured with
+nothing missing -
+https://linode.com/docs/email/postfix/email-with-postfix-dovecot-and-mysql/
+
+From here on out it was pretty much following instructions until I hit some
+problems at the end. It was good atleast that I decided to do it in the end
+because I finally got *some* experience with an actual DB. Pretty much learned
+a bit of SQL on the go, and understood that the way postfix, dovecot and the
+db interface is actually pretty direct, in other words there is no middleware
+between them for ease of use (as it is rather easy for a small task such as
+this already). I directly typed in my SQL queries without using any interface
+for the task.
+
+At first I thought that the user for the database had to be something local
+(I extrapolated this from the fact that they used mailuser@127.0.0.1, making
+me think that this is some local user), but later I found out that this is not
+necessary and it is simply a name.
+
+Some instruction following later.. (adding tables, adding postfix config to
+delegate auth and local delivery to dovecot and also to add files from which to 
+read db config)
+
+I hit upon the problem that I had used 'root' and for some reason it would not work, 
+so I just tried with student (still thinking at this point that it needed to
+be a local user). This proved to work.
+
+I also modified master.cf but I did not read up on what exactly each of the
+services do (I uncommented "submission" and "smtp").
+
+On to dovecot. I installed dovecot-base from debian and later I found I
+actually needed some more stuff like dovecot-postfix, dovecot-lmtp, and some
+others I forgot.
+
+A *lot* of instruction following later... (this time I knew what I was doing
+less than with postfix, as I had actually read the postfix syntax, basic
+config and documentation for different options).
+
+I disabled pop3 as it isn't required for the task and afaik it's not very
+cool. I also disabled lmtp without thinking much at this point which I 
+had to come back and reenable.
+
+I changed dovecot's default mbox to maildir, as I read up on both and maildir
+seems way more sane and set the mail folder to
+"/var/mail/vhosts/%d/%n"
+
+ Afterwards I had to create the folder, take care of permissions, create a
+ special user which would only be used for dovecot virtual mails, take care of
+ ownership.
+
+ I went on to modify the 10-auth configuration file, disabling plaintext auth
+ and enabling mysql auth, modifying the auth-sql file correspondingly. Had to
+ add the configuration for the db (db name, user, password, etc).
+
+ I enabled SHA512-CRYPT which I am not sure what it is an implementation of.
+
+Going onto the master conf, I disabled unencrypted imap by setting it's port
+to 0 and uncommented the configuration for imaps. I added some
+"unix_listeners" which I am unsure as to what they are unfortunately.
+
+After being done with instruction following I backed up the default symlinks
+dovecot.pem and dovecot.key (why are they both in private when only
+dovecot.key is supposed to be private??) and linked them instead to the
+certificates I had generated in step 0. I also made ssl required for dovecot
+by modifying the ssl config file.
+
+At this point I found out about the 2 missing dovecot packages I mentioned
+earlier, taking me some time to figure it out and installed them.
+
+At this point I remembered that MX records are a thing and went on to add
+them. I also found a very weird "bug" (??) with gmail while testing wherein
+the following would happen -
+
+I try to send a mail to zeus@smetana.nestum.net and it would reply with no
+domain found. Meanwhile digging for mx records worked just fine. If I wait
+5-10 minutes and resend again it would work this time. And then periodically,
+some time later it would break again. This is obviously some error with
+caching, but I cannot explain it to myself, as sending from abv had no such
+problems, and asking friends to mail to me also encountered no such problems.
+
+I opened up thunderbird and tried connecting with the config mentioned in
+not_working.txt
+and tried various stuff to make it work, but whatever I did I somehow could
+not manage to send mail through thunderbird. The IMAP side of things worked
+fine, I could check and read mail, etc. Tested various other stuff, and could
+not manage to figure it out. My thunderbird was connecting but not sending
+anything (according to the log which for some reason did not have the
+following information). After tcpdump-ing I found out that my server was
+actually responding with
+500 bad utf8 syntax 
+and
+500 bad syntax
+
+I could not figure it out so I asked 81247 to try logging in with his
+thunderbird to rule out any issues with mine. He entered just *some* of the
+settings (ports I think) and it could autoconfigure after that selecting 
+"STARTTLS" instead of "SSL/TLS" as the encryption method for SMTP.
+I previously thought (only following the guide which I linked) that I did not have 
+"STARTTLS" support, but apparently this is the default for dovecot, as this
+config (which I will attach as "working_config.txt") did work for him and also
+for me. I could now both send and receive mail fine.
+
+In the meantime I got a comment from 81247 "ffs, add an spf record, it takes
+like 20 seconds", so I proceeded to quickly read up on spf and then proceed to
+add an spf record that allowed only mail from the MX's responsible for
+smetana.nestum.net
+I unfortunately did not have time to add SPF checking for my server, but
+atleast read up on it to find that you would usually add some perl script to
+do it for you.
+
+All that was left was to check if my SMTP was actually encrypted. I initally
+just checked gmail which said that "the connection is using TLS encryption",
+but I am unsure as to what this means, so instead I tcpdumped on the ports
+that are supposedly used for tls while sending a mail both from gmail to me
+and from me to gmail (it was actually abv the second time, as gmail was having
+the stupid DNS issues again). Both times I found the exchange between me and
+the server (in the first case it saying it has TLS, and me sending a starttls,
+after which the connection was encrypted and same thing, but the other way
+around the second time).
+
+I will also attach a db.txt file with some stuff concerning the db.
+
+I have no time left for the rest.

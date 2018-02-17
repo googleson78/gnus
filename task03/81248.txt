@@ -1,0 +1,89 @@
+Total work time: ~3hrs (2 of which dealing with initramfs)
+
+I downloaded the image and booted it up in VirtualBox, was surprised by the
+FreeDOS booting up. My immediate reaction was to think that we would have 
+to write our own grub.cfg file (aka write menu entries for grub), and
+so I went off to read up on menu entries and how one goes on about
+booting other operating systems that are not linux. After some searching
+with mixed results I did come to some stuff about chainloading other 
+bootloaders that seemed like it would work I stopped searching as I 
+did not intend to test this, however I did find out about os-prober
+and thought that maybe we would be able to let grub-mkconfig do 
+all the work instead. This was pretty much confirmed after talking to
+A. Velin a day or two later. As I did not (and still do not) have 
+banshee installed I just grabbed a sysrescd live image which I
+plugged into my virtual machine as a CD to use for operations
+on the VDI.  After installing grub (grub-install) with some
+more intermediate steps (which I do not remember very accurately
+anymore, but I suspect that mixed in there somewhere was
+decrypting the encrypted partition (/dev/sda3) and mounting it
+alongside with the /boot partition, after which chrooting to it
+so I could grub-install correctly) I was greeted by a grub screen 
+that had debian as a menu entry (the default state of grub which 
+my colleague had left it in). Going back inside the VM I tried
+mounting the DOS partition and calling os-prober seeing that
+it did indeed detect it (and it also had a script file from
+the ones that grub-mkconfig uses to generate grub configs),
+so as expected just mounting all the file systems and
+grub-mkconfig-ing worked out fine, allowing me to select
+both FreeDOS (successfully) and Debian (not so much) as
+menu entries. Debian however was giving me just a very puzzling "lvm is not
+available", because there was nothing to do with LVM installed
+on the root partiiton (I triple checked).
+and so I set about to read up on how to setup an initramfs
+so that I could run cryptsetup from it and then mount my
+decrypted root filesystem. And what do you know, WHY OFCOURSE
+every distro has it's own tool to do just that. : )
+I set about trying to use Gentoo's own genkernel (as I had
+done so before when installing my own distro), however I quickly
+gave up because 1) genkernel needed linux sources and a .config file
+with them to function properly and 2) I accidentally found out that
+Debian has a thing update-initramfs. After reading up on it I tried
+running it with -u, however I was getting errors (something about
+filesystem fsck and also something about it not being to detect
+the correct cipher) from which I went back to searching and quickly
+found out that it uses the /etc/crypttab file to generate the 
+initramfs which will automatically call cryptsetup open. Looking inside
+I found that it will decrypt the partition set by UID (which was /dev/sda3
+as expected) and give it the name "sda3_crypt", which I thought should not
+be a problem as what name it would be given should not matter. After renaming
+it to "wtf" (which is what I had named it with cryptsetup) the "cipher" errors
+disappeared but the "fsck" warning was still there. Running update-initramfs
+and rebooting got me somewhere further, as I was now able to boot into an
+initramfs, which immediately started complaining about not beeing able to find
+the (root) partition (I cannot recall exactly what it said). Going back and
+hammering my head against a wall for around and hour and a half more trying
+out different things I found out that the only time I got the "cipher" errors
+was when the crypttab entry was called SPECIFICALLY "sda3_crypt" which I found
+to be very strange, as previously I thought that my renaming it to "wtf"
+(which is what I had called my decrypted partition is what caused it to be
+fixed). I do not remember my exact thought process but I think a combination
+of this hint I found out + the name fstab being in the presentation on booting
+made me go oh wait maybe I need to do something about fstab, after which
+checking it out lead me to the result that 1) you had left a message there and
+2) renaming the entry in both fstab and crypttab to "wtf" and running
+update-initramfs finally left me errorless and warningless and I was finally
+able to boot into a working initramfs which asked me for a password and was
+able to correctly boot up into Debian afterwards. Later I found out that
+all of this suffering was pretty much unnecessary when talking to my
+costudents, as they described a process much easier, not even involving
+any tinkering with initramfs'. I suspected this to also be possible
+when I saw the initrd image in the /boot directory/partition and also because
+this was supposedly installed by my colleague (aka he could boot it properly
+and decrypt the partition upon startup) however I did not pursue it further
+(unfortunately). The most clever solution (for me atleast) was njichev's
+which included first grub-install-ing, rebooting into the debian (which
+for unknown reasons did not for me???),
+then grub-mkconfig bypassing any chance of breakage, which is
+where I think I messed up (I am unsure however, if this is true, because
+from my understanding of grub-mkconfig it should still have detected the
+initramfs and used it correctly even the way I did it, but apparently
+something was wrong). Also something else to note was that the "lvm" error
+was also gotten by another colleague.
+
+Acknowledgements: The Gentoo handbook, used it to read up a bit on initramfs'
+and also chrooting.
+Cool feature I found about in VirtualBox: After chrooting for the 10th time
+I noticed that you can create a save state (snapshot), which I proceeded
+to use extensively to reduce my work time each time I chrooted into the Debian
+environment by about 10000%.
